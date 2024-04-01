@@ -4,6 +4,7 @@
   "main": "index.js",
   "author": "Boluwatife Ade-Ojo <adeojopeter@gmail.com>",
   "license": "MIT",
+  "type": "module",
   "dependencies": {
     "express": "^4.19.2"
   },

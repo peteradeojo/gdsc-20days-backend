@@ -1,5 +1,7 @@
-const express = require('express');
+// const express = require('express');
+import express from 'express';
 
 const app = express();
 
-module.exports = app;
+// module.exports = app;
+export default app;
