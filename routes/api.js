@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const joi = require('joi');
 const { Database } = require('../lib/database');
+const passport = require('passport');
 
 const router = Router();
 
@@ -11,7 +12,7 @@ module.exports = () => {
 
 	router
 		.route('/books')
-		.get(async (req, res) => {
+		.get(passport.authenticate('jwt', { session: false }), async (req, res) => {
 			const books = await Database.execute('SELECT * FROM books');
 			return res.json(books);
 		})
@@ -36,7 +37,7 @@ module.exports = () => {
 				try {
 					const book = await Database.execute(
 						'INSERT INTO books (name, isbn, datePublished) VALUES ($1, $2, $3) RETURNING name, isbn, datePublished;',
-						[req.body.name, req.body.isbn, req.body.date]
+						[req.body.name, req.body.isbn, req.body.date],
 					);
 
 					return res.status(201).json(book[0]);
@@ -44,7 +45,7 @@ module.exports = () => {
 					console.error(error);
 					return res.status(500).json({ error: error.message });
 				}
-			}
+			},
 		);
 
 	router
@@ -81,7 +82,7 @@ module.exports = () => {
 				try {
 					const book = await Database.execute(
 						`SELECT * FROM books WHERE id = $1`,
-						[req.params.id]
+						[req.params.id],
 					);
 
 					if (book.length < 1) {
@@ -96,20 +97,20 @@ module.exports = () => {
 							isbn || book[0].isbn,
 							date || book[0].datePublished,
 							req.params.id,
-						]
+						],
 					);
 
 					return res.json(update[0]);
 				} catch (error) {
 					return res.status(500).json({ error: error.message });
 				}
-			}
+			},
 		)
 		.delete(async (req, res) => {
 			try {
 				const result = await Database.execute(
 					'DELETE FROM books WHERE id=$1 RETURNING name, isbn, datePublished',
-					[req.params.id]
+					[req.params.id],
 				);
 
 				return res.json(result[0]);

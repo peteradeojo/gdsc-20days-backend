@@ -4,9 +4,11 @@ const apiRouter = require('./routes/api');
 const { Database } = require('./lib/database');
 
 const app = require('./server');
+const authRouter = require('./routes/auth');
 
 app.use('/', indexRouter());
 app.use('/api', apiRouter());
+app.use('/auth', authRouter());
 
 const port = process.env.PORT || 3000;
 

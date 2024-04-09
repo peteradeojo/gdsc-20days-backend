@@ -59,17 +59,20 @@ const runUp = async () => {
 			await Database.execute(q.up);
 			await Database.execute(
 				`INSERT INTO migrations (name, up, down) VALUES ($1, $2, $3);`,
-				[q.file, q.up, q.down]
+				[q.file, q.up, q.down],
 			);
 		} catch (err) {
 			console.error(err);
 			console.log('ERROR occurred:', q.up);
+		} finally {
+			console.log('Done');
+			process.exit();
 		}
 	}
 };
 const runDown = async () => {
 	const [migration] = await Database.execute(
-		`SELECT * FROM migrations ORDER BY id DESC LIMIT 1`
+		`SELECT * FROM migrations ORDER BY id DESC LIMIT 1`,
 	);
 
 	if (migration) {
@@ -90,7 +93,7 @@ const runDown = async () => {
 
 	const r = await Database.execute(
 		'SELECT tablename FROM pg_tables WHERE tablename=$1',
-		['migrations']
+		['migrations'],
 	);
 
 	if (r.length < 1) {
